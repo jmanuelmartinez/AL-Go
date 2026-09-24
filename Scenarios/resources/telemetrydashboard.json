@@ -1138,6 +1138,63 @@
             }
         },
         {
+            "id": "cd5e65d9-60c4-4987-a803-5f26acfe1ed5",
+            "title": "Latest Failed PR Builds",
+            "visualType": "table",
+            "pageId": "0db9b7a4-dbc9-5f0e-b4fe-1a34aa754f4f",
+            "layout": {
+                "x": 0,
+                "y": 35,
+                "width": 22,
+                "height": 10
+            },
+            "queryRef": {
+                "kind": "query",
+                "queryId": "0b0c14d5-5233-4fd7-8021-8b6669789d54"
+            },
+            "description": "Latest observed failure or timeout per repository and ref in the selected range. A successful rerun removes the row. Pull request open status is not available in telemetry.",
+            "visualOptions": {
+                "table__enableRenderLinks": true,
+                "colorRulesDisabled": true,
+                "colorStyle": "light",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "crossFilter": [
+                    {
+                        "interaction": "column",
+                        "property": "RepositoryName",
+                        "parameterId": "03cef627-cbb5-4acc-b2b0-fa61d1bad48c",
+                        "disabled": false
+                    }
+                ],
+                "drillthrough": [
+                    {
+                        "pairs": [
+                            {
+                                "parameterId": "03cef627-cbb5-4acc-b2b0-fa61d1bad48c",
+                                "property": "RepositoryName"
+                            },
+                            {
+                                "parameterId": "e35cb8d1-bb86-4cf1-a5eb-8a213b27d53a",
+                                "property": "RunId"
+                            }
+                        ],
+                        "destinationPages": [
+                            "a7be3875-d31c-5943-8ff4-be3131ba5b29"
+                        ],
+                        "disabled": false
+                    }
+                ],
+                "table__renderLinks": [
+                    {
+                        "urlColumn": "HtmlUrl",
+                        "disabled": false
+                    }
+                ],
+                "colorRules": []
+            }
+        },
+        {
             "id": "b98dc321-0ba9-589d-9910-04b24c401ebb",
             "title": " ",
             "visualType": "markdownCard",
@@ -2396,6 +2453,21 @@
             },
             "text": "WorkflowTelemetry\n  | where isempty(_repository) or RepositoryName == _repository\n  | where isempty(_workflow) or WorkflowName == _workflow\n  | where isempty(_refName) or RefName == _refName\n  | where isempty(_repoType) or RepoType == _repoType\n  | where WorkflowName == \"Pull Request Build\"\n  | summarize Runs=sum(ItemCount) by bin(timestamp, 1d), WorkflowConclusion\n  | order by timestamp asc",
             "id": "99c803f5-fb05-5948-ac43-e7c5e44286ad",
+            "usedVariables": [
+                "WorkflowTelemetry",
+                "_repository",
+                "_workflow",
+                "_refName",
+                "_repoType"
+            ]
+        },
+        {
+            "dataSource": {
+                "kind": "inline",
+                "dataSourceId": "8320a60e-6341-4e9d-9245-9b89f7c218f0"
+            },
+            "text": "WorkflowTelemetry\n  | where isempty(_repository) or RepositoryName == _repository\n  | where isempty(_workflow) or WorkflowName == _workflow\n  | where isempty(_refName) or RefName == _refName\n  | where isempty(_repoType) or RepoType == _repoType\n  | where WorkflowName == \"Pull Request Build\"\n  | where isnotempty(RepositoryName) and isnotempty(RunId)\n  | extend PRKey=iff(isnotempty(RefName), strcat(\"ref:\", RefName), strcat(\"run:\", RunId))\n  | summarize arg_max(timestamp, *) by RepositoryName, PRKey\n  | where WorkflowConclusion in~ (\"Failure\", \"TimedOut\")\n  | project timestamp, RepositoryName, RefName, RunId, RunAttempt, WorkflowConclusion, WorkflowDurationMinutes, HtmlUrl\n  | top 200 by timestamp desc",
+            "id": "0b0c14d5-5233-4fd7-8021-8b6669789d54",
             "usedVariables": [
                 "WorkflowTelemetry",
                 "_repository",

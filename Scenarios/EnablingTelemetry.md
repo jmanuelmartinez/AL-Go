@@ -28,6 +28,8 @@ AL-Go provides a template Azure Data Explorer dashboard to help you monitor work
 
 The dashboard reports missing telemetry as **No telemetry** rather than treating missing data as a successful or healthy result. Test telemetry is emitted only when AL-Go executes at least one AL test, page scripting test, or BCPT test, so repositories without test runs don't populate the Tests & Quality page.
 
+The Reliability page includes **Latest Failed PR Builds**. It shows the latest observed Pull Request Build result for each repository and ref when that result failed or timed out. A later successful run or rerun removes the row within the selected time range. If a ref was not reported, the table keeps runs separate by run ID. Telemetry does not report whether a pull request is still open, so this table is a record of observed build results rather than a list of open pull requests.
+
 The Run Explorer includes raw action error messages. Grant access to the dashboard and underlying Application Insights resource only to operators who are allowed to see repository operational details. The dashboard uses a five-minute query results cache to reduce repeated query load and doesn't enable automatic refresh by default.
 
 The **Execution Runtime & Supportability** table shows the latest observed AL-Go and PowerShell runtime per repository, together with the latest action in the selected range that reported BcContainerHelper as loaded. **Not loaded/reported** doesn't indicate an installation failure. Optionally enter an expected BcContainerHelper version on the AL-Go Maintenance page to identify repositories that differ from your organizational baseline.
